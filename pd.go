@@ -6,30 +6,52 @@ import (
 )
 
 type PDClient interface {
-	GetEscalationPolicies(string) ([]pagerduty.EscalationPolicy, error)
+	GetEscalationPolicies() ([]pagerduty.EscalationPolicy, error)
+	GetServices() ([]pagerduty.Service, error)
 }
 
-type TfPDClient struct{}
+type TfPDClient struct {
+	client pagerduty.Client
+}
 
 // Returns all the Pagerduty Escalation Policies
-func (c TfPDClient) GetEscalationPolicies(token string) ([]pagerduty.EscalationPolicy, error) {
+func (c TfPDClient) GetEscalationPolicies() ([]pagerduty.EscalationPolicy, error) {
 	var opts pagerduty.ListEscalationPoliciesOptions
-	client := pagerduty.NewClient(token)
 	var escalationPolicies []pagerduty.EscalationPolicy
 	for {
 		opts.APIListObject.Offset = uint(len(escalationPolicies))
-		if eps, err := client.ListEscalationPolicies(opts); err != nil {
-			panic(err)
+		if policyResponse, err := c.client.ListEscalationPolicies(opts); err != nil {
+			return escalationPolicies, err
 		} else {
-			for _, p := range eps.EscalationPolicies {
-				escalationPolicies = append(escalationPolicies, p)
+			for _, policy := range policyResponse.EscalationPolicies {
+				escalationPolicies = append(escalationPolicies, policy)
 			}
-			if ! eps.APIListObject.More {
+			if !policyResponse.APIListObject.More {
 				break
 			}
 		}
 	}
 	return escalationPolicies, nil
+}
+
+// Returns all the Pagerduty Services
+func (c TfPDClient) GetServices() ([]pagerduty.Service, error) {
+	var opts pagerduty.ListServiceOptions
+	var services []pagerduty.Service
+	for {
+		opts.APIListObject.Offset = uint(len(services))
+		if serviceResponse, err := c.client.ListServices(opts); err != nil {
+			return services, err
+		} else {
+			for _, service := range serviceResponse.Services {
+				services = append(services, service)
+			}
+			if !serviceResponse.APIListObject.More {
+				break
+			}
+		}
+	}
+	return services, nil
 }
 
 func main() {
@@ -39,6 +61,7 @@ func main() {
 		panic(err)
 	}
 	authtoken := viper.GetString("authtoken")
-	tfclient := TfPDClient{}
-	tfclient.GetEscalationPolicies(authtoken)
+	tfclient := TfPDClient{client: *pagerduty.NewClient(authtoken)}
+	tfclient.GetEscalationPolicies()
+	tfclient.GetServices()
 }
