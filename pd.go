@@ -54,14 +54,14 @@ func (c TfPDClient) GetServices() ([]pagerduty.Service, error) {
 	return services, nil
 }
 
-func main() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
-	}
-	authtoken := viper.GetString("authtoken")
-	tfclient := TfPDClient{client: *pagerduty.NewClient(authtoken)}
-	tfclient.GetEscalationPolicies()
-	tfclient.GetServices()
-}
+// func main() {
+// 	viper.SetConfigName("config")
+// 	viper.AddConfigPath(".")
+// 	if err := viper.ReadInConfig(); err != nil {
+// 		panic(err)
+// 	}
+// 	authtoken := viper.GetString("authtoken")
+// 	tfclient := TfPDClient{client: *pagerduty.NewClient(authtoken)}
+// 	tfclient.GetEscalationPolicies()
+// 	tfclient.GetServices()
+// }
