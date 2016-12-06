@@ -6,7 +6,7 @@ import (
     "os/exec"
     "errors"
 
-    // "github.com/spf13/viper"
+    "github.com/spf13/viper"
 )
 
 const (
@@ -82,13 +82,13 @@ func importResource(token, resType, name, id string) error {
     return nil
 }
 
-// func main() {
-//     viper.SetConfigName("config")
-//     viper.AddConfigPath(".")
-//     if err := viper.ReadInConfig(); err != nil {
-//         panic(err)
-//     }
-//     authtoken := viper.GetString("authtoken")
-//     tfclient := TfClient{pdToken: authtoken, importRes: importResource}
-//     tfclient.ImportService("P595V8T", "acl")
-// }
+func main() {
+    viper.SetConfigName("config")
+    viper.AddConfigPath(".")
+    if err := viper.ReadInConfig(); err != nil {
+        panic(err)
+    }
+    authtoken := viper.GetString("authtoken")
+    tfclient := TfClient{pdToken: authtoken, importRes: importResource}
+    tfclient.ImportService("P595V8T", "acl")
+}
