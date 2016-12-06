@@ -13,7 +13,7 @@ type TfPDClient struct {
 	client pagerduty.Client
 }
 
-// GetEscalationPolicies fetches and returns all the Pagerduty Escalation Policies
+// GetEscalationPolicies fetches and returns all the Pagerduty Escalation Policies.
 func (c TfPDClient) GetEscalationPolicies() ([]pagerduty.EscalationPolicy, error) {
 	var opts pagerduty.ListEscalationPoliciesOptions
 	var escalationPolicies []pagerduty.EscalationPolicy
@@ -33,7 +33,7 @@ func (c TfPDClient) GetEscalationPolicies() ([]pagerduty.EscalationPolicy, error
 	return escalationPolicies, nil
 }
 
-// GetServices fetches and returns all the Pagerduty Services
+// GetServices fetches and returns all the Pagerduty Services.
 func (c TfPDClient) GetServices() ([]pagerduty.Service, error) {
 	var opts pagerduty.ListServiceOptions
 	var services []pagerduty.Service
