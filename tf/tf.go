@@ -13,8 +13,8 @@ const (
 )
 
 type TerraformClient interface {
-	ImportService(id, name string)
-	ImportEscalationPolicy(id, name string)
+	ImportService(id, name string) error
+	ImportEscalationPolicy(id, name string) error
 }
 
 type TfClient struct {

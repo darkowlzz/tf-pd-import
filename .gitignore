@@ -1,2 +1,4 @@
 config.*
 vendor/*/
+terraform.tfstate
+terraform.tfstate.backup
