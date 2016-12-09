@@ -1,4 +1,4 @@
-package main
+package tf
 
 import (
 	"testing"
@@ -85,7 +85,7 @@ func TestImportServices(t *testing.T) {
 		// Set the mock config in viper
 		viper.Set("services", s)
 
-		importServices(c.tf)
+		ImportServices(c.tf)
 
 		// Check if ImportService was called expected number of times
 		if c.tf.importServiceCallCount != c.expectedCallCount {
@@ -164,7 +164,7 @@ func TestImportEscalationPolicies(t *testing.T) {
 		// Set the mock config in viper
 		viper.Set("policies", s)
 
-		importEscalationPolicies(c.tf)
+		ImportEscalationPolicies(c.tf)
 
 		// Check if ImportEscalationPolicy was called expected number of times
 		if c.tf.importEscalationPolicyCallCount != c.expectedCallCount {
