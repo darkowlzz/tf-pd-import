@@ -12,12 +12,13 @@ func TestTfClient(t *testing.T) {
 
 	// A mock function that would be called by ImportEscalationPolicy and
 	// ImportService
-	fakeImportRes := func(token, resType, name, id string) error {
+	fakeImportRes := func(token, tfBin, resType, name, id string) error {
 		called = !called
 		return returnError
 	}
 
-	tf := TfClient{pdToken: "AAAA", importRes: fakeImportRes}
+	tf := TfClient{pdToken: "AAAA", importRes: fakeImportRes,
+		TerraformBin: "terraform"}
 
 	cases := []struct {
 		f            func(id, name string) error

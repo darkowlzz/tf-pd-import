@@ -9,6 +9,12 @@ var GetConfig = func(prop string) interface{} {
 	return viper.Get(prop)
 }
 
+// GetStringConfig reads given property from viper config and returns a string
+// value.
+var GetStringConfig = func(prop string) string {
+	return viper.GetString(prop)
+}
+
 // ImportServices imports all the Pagerduty Services in config file
 func ImportServices(tclient TerraformClient) error {
 	services := GetConfig("services")
