@@ -18,20 +18,25 @@ type TerraformClient interface {
 }
 
 type TfClient struct {
-	pdToken   string
-	importRes func(token, resType, name, id string) error
+	pdToken      string
+	importRes    func(token, tfBin, resType, name, id string) error
+	TerraformBin string
 }
 
 // ImportEscalationPolicy imports Pagerduty Escalation Policy as a terraform
 // resource, given a resource id and name.
 func (c TfClient) ImportEscalationPolicy(id, name string) error {
-	return c.importRes(c.pdToken, EscalationPolicyPrefix, name, id)
+	return c.importRes(
+		c.pdToken, c.TerraformBin, EscalationPolicyPrefix, name, id,
+	)
 }
 
 // ImportService imports Pagerduty Service as a terraform resource, given a
 // resource id and name.
 func (c TfClient) ImportService(id, name string) error {
-	return c.importRes(c.pdToken, ServicePrefix, name, id)
+	return c.importRes(
+		c.pdToken, c.TerraformBin, ServicePrefix, name, id,
+	)
 }
 
 // getResourceName combines a resource type with a given name to return a string
@@ -49,10 +54,10 @@ func getResourceName(resType, name string) (string, error) {
 
 // terraformImport uses terraform import command to import an existing resource,
 // provided a provider's token, resourceName and resource terraform ID.
-func terraformImport(token, resourceName, id string) error {
+func terraformImport(token, tfBin, resourceName, id string) error {
 	var err error
 	cmd1 := exec.Command("echo", token)
-	cmd2 := exec.Command("terraform", "import", resourceName, id)
+	cmd2 := exec.Command(tfBin, "import", resourceName, id)
 
 	cmd2.Stdin, err = cmd1.StdoutPipe()
 	if err != nil {
@@ -75,12 +80,13 @@ func terraformImport(token, resourceName, id string) error {
 
 // importResource forms the data required to import a resource and calls import
 // method.
-func importResource(token, resType, name, id string) error {
+func importResource(token, tfBin, resType, name, id string) error {
 	resourceName, err := getResourceName(resType, name)
 	if err != nil {
 		return err
 	}
-	if err := terraformImport(token, resourceName, id); err != nil {
+	err = terraformImport(token, tfBin, resourceName, id)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -89,7 +95,8 @@ func importResource(token, resType, name, id string) error {
 // NewTf returns a new TfClient object.
 func NewTf(pdToken string) *TfClient {
 	return &TfClient{
-		pdToken:   pdToken,
-		importRes: importResource,
+		pdToken:      pdToken,
+		importRes:    importResource,
+		TerraformBin: "terraform",
 	}
 }

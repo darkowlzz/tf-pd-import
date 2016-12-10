@@ -20,6 +20,12 @@ func main() {
 	authtoken := tf.GetConfig("authtoken").(string)
 	tfclient := tf.NewTf(authtoken)
 
+	// Check if terraformBin is defined and use the binary if defined
+	tfBin := tf.GetStringConfig("terraformBin")
+	if tfBin != "" {
+		tfclient.TerraformBin = tfBin
+	}
+
 	tf.ImportServices(tfclient)
 	tf.ImportEscalationPolicies(tfclient)
 }
