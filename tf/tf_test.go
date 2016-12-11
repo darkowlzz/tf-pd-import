@@ -99,5 +99,71 @@ func TestTerraformImport(t *testing.T) {
 }
 
 func TestImportResource(t *testing.T) {
-	// TODO: Find ways to test this
+	var getResourceNameCalled bool
+	var terraformImportCalled bool
+	var getResourceNameErr error
+	var terraformImportErr error
+
+	getResourceName = func(resType, name string) (string, error) {
+		getResourceNameCalled = !getResourceNameCalled
+		return "", getResourceNameErr
+	}
+
+	terraformImport = func(token, tfBin, resName, id string) error {
+		terraformImportCalled = !terraformImportCalled
+		return terraformImportErr
+	}
+
+	cases := []struct {
+		getResErr              error
+		tfImportErr            error
+		expectedGetResCalled   bool
+		expectedTfImportCalled bool
+		expectedErr            error
+	}{
+		{
+			getResErr:              nil,
+			tfImportErr:            nil,
+			expectedGetResCalled:   true,
+			expectedTfImportCalled: true,
+			expectedErr:            nil,
+		},
+		{
+			getResErr:              errors.New("TCP error"),
+			tfImportErr:            nil,
+			expectedGetResCalled:   true,
+			expectedTfImportCalled: false,
+			expectedErr:            errors.New("TCP error"),
+		},
+		{
+			getResErr:              nil,
+			tfImportErr:            errors.New("TCP error"),
+			expectedGetResCalled:   true,
+			expectedTfImportCalled: true,
+			expectedErr:            errors.New("TCP error"),
+		},
+	}
+
+	for _, c := range cases {
+		getResourceNameCalled = false
+		terraformImportCalled = false
+		getResourceNameErr = c.getResErr
+		terraformImportErr = c.tfImportErr
+		err := importResource("token1", "tf", "res", "name", "id")
+		if !reflect.DeepEqual(err, c.expectedErr) {
+			t.Fatalf("Expected err to be %s but got %s", c.expectedErr, err)
+		}
+		if getResourceNameCalled != c.expectedGetResCalled {
+			t.Fatalf(
+				"Expected getResourceNameCalled to be %d but got %d",
+				c.expectedGetResCalled, getResourceNameCalled,
+			)
+		}
+		if terraformImportCalled != c.expectedTfImportCalled {
+			t.Fatalf(
+				"Expected terraformImportCalled to be %d but got %d",
+				c.expectedTfImportCalled, terraformImportCalled,
+			)
+		}
+	}
 }

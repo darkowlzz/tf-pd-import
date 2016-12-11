@@ -41,7 +41,7 @@ func (c TfClient) ImportService(id, name string) error {
 
 // getResourceName combines a resource type with a given name to return a string
 // that could be used with terraform import command.
-func getResourceName(resType, name string) (string, error) {
+var getResourceName = func(resType, name string) (string, error) {
 	switch resType {
 	case EscalationPolicyPrefix:
 		return strings.Join([]string{EscalationPolicyPrefix, name}, "."), nil
@@ -54,7 +54,7 @@ func getResourceName(resType, name string) (string, error) {
 
 // terraformImport uses terraform import command to import an existing resource,
 // provided a provider's token, resourceName and resource terraform ID.
-func terraformImport(token, tfBin, resourceName, id string) error {
+var terraformImport = func(token, tfBin, resourceName, id string) error {
 	var err error
 	cmd1 := exec.Command("echo", token)
 	cmd2 := exec.Command(tfBin, "import", resourceName, id)
@@ -80,7 +80,7 @@ func terraformImport(token, tfBin, resourceName, id string) error {
 
 // importResource forms the data required to import a resource and calls import
 // method.
-func importResource(token, tfBin, resType, name, id string) error {
+var importResource = func(token, tfBin, resType, name, id string) error {
 	resourceName, err := getResourceName(resType, name)
 	if err != nil {
 		return err

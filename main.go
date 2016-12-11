@@ -17,7 +17,7 @@ func configInit() {
 func main() {
 	configInit()
 	// type assert config to be string
-	authtoken := tf.GetConfig("authtoken").(string)
+	authtoken := tf.GetStringConfig("authtoken")
 	tfclient := tf.NewTf(authtoken)
 
 	// Check if terraformBin is defined and use the binary if defined
